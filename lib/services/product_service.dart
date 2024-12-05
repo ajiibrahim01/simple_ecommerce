@@ -6,8 +6,8 @@ import 'package:simple_eccomerce/models/ResponseModel.dart'; // Import the Respo
 class ProductService {
   Future<ResponseModel> getProducts() async {
     try {
-      final response =
-          await http.get(Uri.parse("https://fakestoreapi.in/api/products"));
+      final response = await http
+          .get(Uri.parse("https://fakestoreapi.in/api/products?limit=16"));
 
       if (response.statusCode == 200) {
         // Decode the response body into a map (not a list)

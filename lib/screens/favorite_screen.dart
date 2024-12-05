@@ -53,21 +53,23 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 170,
+        toolbarHeight: 120,
         elevation: 0,
         backgroundColor: Colors.white,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${widget.user.username}',
+                  "${widget.user.username}'s",
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
                 ),
-                Text(" Favorite's products"),
+                Text("favorite products"),
               ],
             ),
           ],

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:simple_eccomerce/models/UserModel.dart';
 import 'package:simple_eccomerce/screens/home_screen.dart';
 import 'package:simple_eccomerce/screens/payment_screen.dart';
@@ -42,7 +41,7 @@ class _CartScreenState extends State<CartScreen> {
       builder: (context, value, child) {
         int price = 0;
         int totalPrice = 0;
-        int taxAndService = 0;
+        int taxAndService = 2;
         int totalPayment = 0;
 
         // Calculate total price for cart items
@@ -53,31 +52,20 @@ class _CartScreenState extends State<CartScreen> {
         }
 
         // Calculate tax and service fee
-        taxAndService = (totalPrice * 0.11).toInt();
+        //taxAndService = (totalPrice * 0.11).toInt();
         totalPayment = (totalPrice + taxAndService);
 
         return loader
             ? Center(
                 child: SizedBox(
-                  width: 200,
-                  height: 100,
-                  child: Shimmer.fromColors(
-                    child: Text(
-                      'Loading',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 40.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    baseColor: Colors.grey,
-                    highlightColor: Colors.white,
-                  ),
+                  child: CircularProgressIndicator(),
                 ),
               )
             : Scaffold(
+                backgroundColor: Colors.white,
                 appBar: AppBar(
                   title: Text('Cart'),
+                  backgroundColor: Colors.white,
                   actions: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -174,7 +162,8 @@ class _CartScreenState extends State<CartScreen> {
                 bottomNavigationBar: totalPrice == 0
                     ? null
                     : Container(
-                        color: Theme.of(context).scaffoldBackgroundColor,
+                        //color: Theme.of(context).scaffoldBackgroundColor,
+                        color: Colors.white,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -203,7 +192,7 @@ class _CartScreenState extends State<CartScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Tax and Service'),
+                                      Text('Service Fee'),
                                       Text('\$ ${taxAndService}'),
                                     ],
                                   ),
@@ -232,12 +221,17 @@ class _CartScreenState extends State<CartScreen> {
                                   ],
                                 ),
                                 onPressed: () {
+                                  Provider.of<CartProvider>(context,
+                                          listen: false)
+                                      .clearCart();
+
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => PaymentScreen(
                                               totalPayment:
-                                                  totalPayment.toString())));
+                                                  totalPayment.toString(),
+                                              user: widget.user)));
                                 },
                               ),
                             )

@@ -88,18 +88,54 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Text('to Fantasy Shop'),
             SizedBox(height: 10),
-            Container(
-              child: IconButton(
-                  icon: Icon(
-                    CupertinoIcons.search,
-                    size: 20,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchScreen(
+                              user: widget.user,
+                            )));
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SearchScreen()));
-                  }),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    /* IconButton(
+                        icon: Icon(
+                          CupertinoIcons.search,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SearchScreen(
+                                        user: widget.user,
+                                      )));
+                        }), */
+                    Icon(
+                      CupertinoIcons.search,
+                      size: 18,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      'Search Product',
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.4),
+                        fontSize: 14,
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
             SizedBox(width: 100),
           ],
@@ -111,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Stack(
                   children: [
-                    Column(
+                    Row(
                       children: [
                         IconButton(
                           icon: Icon(

@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_eccomerce/models/UserModel.dart';
+import 'package:simple_eccomerce/screens/confirmation_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String totalPayment;
+  final UserModel user;
 
-  const PaymentScreen({super.key, required this.totalPayment});
+  const PaymentScreen(
+      {super.key, required this.totalPayment, required this.user});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -23,10 +27,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Payment Screen'),
+        backgroundColor: Colors.white,
       ),
       body: Container(
+        color: Colors.white,
         margin: EdgeInsets.all(10),
         child: ListView(
           children: [
@@ -272,7 +279,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                       ),
                                     ],
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    print(DateTime.now());
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ConfirmationScreen(
+                                                  total: widget.totalPayment
+                                                      .toString(),
+                                                  user: widget.user,
+                                                  date: DateTime.now(),
+                                                )));
+                                  },
                                 ),
                               ],
                             ),
