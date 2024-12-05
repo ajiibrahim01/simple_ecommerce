@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_eccomerce/models/ProductModel.dart';
 import 'package:simple_eccomerce/models/UserModel.dart';
+import 'package:simple_eccomerce/screens/cart_screen.dart';
 import 'package:simple_eccomerce/screens/detail_screen.dart';
 import 'package:simple_eccomerce/screens/search_screen.dart';
+import 'package:simple_eccomerce/services/cart_provider.dart';
 import 'package:simple_eccomerce/services/service_provider.dart'; // Import ServiceProvider
 
 class HomeScreen extends StatefulWidget {
@@ -36,11 +38,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Map<String, bool> favoriteStatus = {};
+
+  void goToCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartScreen(
+          user: widget.user,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 120,
+        toolbarHeight: 170,
         elevation: 0,
         backgroundColor: Colors.white,
         title: Column(
@@ -61,31 +75,78 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Text('to Fantasy Shop'),
             SizedBox(height: 10),
-            Row(
-              children: [
-                IconButton(
-                    icon: Icon(
-                      CupertinoIcons.search,
-                      size: 30,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SearchScreen()));
-                    }),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.filter_list),
-                ),
-              ],
+            Container(
+              child: IconButton(
+                  icon: Icon(
+                    CupertinoIcons.search,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SearchScreen()));
+                  }),
             ),
+            SizedBox(width: 100),
           ],
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(CupertinoIcons.bag),
+          Consumer<CartProvider>(
+            builder: (context, value, child) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            CupertinoIcons.bag,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            goToCart();
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            CupertinoIcons.heart_fill,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.filter_list),
+                        ),
+                      ],
+                    ),
+                    Positioned(
+                      top: 14,
+                      left: 14,
+                      child: Visibility(
+                        visible: value.cart.isNotEmpty ? true : false,
+                        child: CircleAvatar(
+                          radius: 10,
+                          backgroundColor: Colors.transparent,
+                          child: Center(
+                            child: Text(
+                              value.cart.length.toString(),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -115,7 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: value.products.length,
             itemBuilder: (context, index) {
               final product = value.products[index];
-              final bool isFavorited = favoriteStatus[product.id] ?? false;
+              //bool isFavorited = favoriteStatus[product.id] ?? false;
+
               bool hasDiscount =
                   product.discount != null && product.discount! > 0;
               int finalPrice = 0;
@@ -129,6 +191,9 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return GestureDetector(
                 onTap: () {
+                  if (finalPrice > 0) {
+                    product.price = finalPrice;
+                  }
                   goToDetail(product, widget.user);
                 },
                 child: Padding(
@@ -175,7 +240,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     right: 0,
                                     child: IconButton(
                                       icon: Icon(
-                                        isFavorited
+                                        favoriteStatus[product.id.toString()] ==
+                                                true
                                             ? CupertinoIcons.heart_fill
                                             : CupertinoIcons.heart,
                                         color: Colors.red,
@@ -185,7 +251,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         // Action for the button
                                         setState(() {
                                           favoriteStatus[product.id
-                                              .toString()] = !isFavorited;
+                                              .toString()] = !(favoriteStatus[
+                                                  product.id.toString()] ??
+                                              false);
                                         });
                                         print(product.id);
                                       },
