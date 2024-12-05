@@ -5,20 +5,18 @@ import 'package:simple_eccomerce/models/ProductModel.dart';
 import 'package:simple_eccomerce/models/UserModel.dart';
 import 'package:simple_eccomerce/screens/cart_screen.dart';
 import 'package:simple_eccomerce/screens/detail_screen.dart';
-import 'package:simple_eccomerce/screens/favorite_screen.dart';
-import 'package:simple_eccomerce/screens/search_screen.dart';
-import 'package:simple_eccomerce/services/cart_provider.dart';
 import 'package:simple_eccomerce/services/service_provider.dart'; // Import ServiceProvider
 
-class HomeScreen extends StatefulWidget {
+class FavoriteScreen extends StatefulWidget {
+  final Map<String, bool> favorite;
   final UserModel user;
-  const HomeScreen({super.key, required this.user});
+  const FavoriteScreen({super.key, required this.user, required this.favorite});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   void initState() {
     super.initState();
@@ -51,18 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void goToFavorites(Map<String, bool> favorites) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FavoriteScreen(
-          user: widget.user,
-          favorite: favorites,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,93 +63,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Text(
-                  'Welcome ',
-                ),
-                Text(
                   '${widget.user.username}',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
-                )
+                ),
+                Text(" Favorite's products"),
               ],
             ),
-            Text('to Fantasy Shop'),
-            SizedBox(height: 10),
-            Container(
-              child: IconButton(
-                  icon: Icon(
-                    CupertinoIcons.search,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SearchScreen()));
-                  }),
-            ),
-            SizedBox(width: 100),
           ],
         ),
-        actions: [
-          Consumer<CartProvider>(
-            builder: (context, value, child) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            CupertinoIcons.bag,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            goToCart();
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        IconButton(
-                          onPressed: () {
-                            goToFavorites(favoriteStatus);
-                          },
-                          icon: Icon(
-                            CupertinoIcons.heart_fill,
-                            color: Colors.redAccent,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.filter_list),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      top: 14,
-                      left: 14,
-                      child: Visibility(
-                        visible: value.cart.isNotEmpty ? true : false,
-                        child: CircleAvatar(
-                          radius: 10,
-                          backgroundColor: Colors.transparent,
-                          child: Center(
-                            child: Text(
-                              value.cart.length.toString(),
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Container(color: Colors.white, child: GetProductList()),
     );
@@ -181,6 +89,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text(value.errorMessage!),
           );
         } else {
+          final favoriteProducts = value.products.where((product) {
+            return widget.favorite[product.id.toString()] == true;
+          }).toList();
           // Display products in a GridView
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -188,10 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisSpacing: 1,
                 mainAxisSpacing: 1,
                 childAspectRatio: 2 / 3),
-            itemCount: value.products.length,
+            itemCount: favoriteProducts.length,
             itemBuilder: (context, index) {
               final product = value.products[index];
-              //bool isFavorited = favoriteStatus[product.id] ?? false;
 
               bool hasDiscount =
                   product.discount != null && product.discount! > 0;
@@ -257,8 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       icon: Icon(
                                         favoriteStatus[product.id.toString()] ==
                                                 true
-                                            ? CupertinoIcons.heart_fill
-                                            : CupertinoIcons.heart,
+                                            ? CupertinoIcons.heart
+                                            : CupertinoIcons.heart_fill,
                                         color: Colors.red,
                                         size: 30,
                                       ),

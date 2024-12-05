@@ -5,6 +5,7 @@ import 'package:simple_eccomerce/models/CartModel.dart';
 import 'package:simple_eccomerce/models/ProductModel.dart';
 import 'package:simple_eccomerce/models/UserModel.dart';
 import 'package:simple_eccomerce/screens/cart_screen.dart';
+import 'package:simple_eccomerce/screens/home_screen.dart';
 import 'package:simple_eccomerce/services/cart_provider.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -60,7 +61,14 @@ class _DetailScreenState extends State<DetailScreen> {
     // Navigate to the corresponding page based on the tapped index
     switch (index) {
       case 0:
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(
+              user: widget.user,
+            ),
+          ),
+        );
         break;
       case 1:
         addToCart();
