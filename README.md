@@ -1,4 +1,4 @@
-# simple_eccomerce
+# Shopping Cart App_ Ibrahim Aji
 
 A new Flutter project.
 
